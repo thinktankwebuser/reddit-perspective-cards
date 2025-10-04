@@ -151,7 +151,15 @@ export default function SearchPage() {
                     key={suggestion}
                     onClick={() => {
                       setQuery(suggestion);
-                      setTimeout(handleSearch, 100);
+                      setError(null);
+                      setHasSearched(false);
+                      // Trigger search after query state updates
+                      setTimeout(() => {
+                        const trimmedQuery = suggestion.trim();
+                        if (trimmedQuery.length >= 2) {
+                          handleSearch();
+                        }
+                      }, 50);
                     }}
                     className="px-3 py-1 bg-muted hover:bg-muted/80 rounded-full text-xs"
                   >

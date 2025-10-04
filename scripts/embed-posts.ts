@@ -8,17 +8,24 @@
 
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// Load .env.local from apps/web directory
+config({ path: resolve(__dirname, '../apps/web/.env.local') });
 
 // Configuration
 const BATCH_SIZE = 100; // Process 100 posts at a time
 const EMBEDDING_MODEL = 'text-embedding-3-small'; // 1536 dimensions, $0.02/1M tokens
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const SUPABASE_URL = process.env.SUPABASE_URL!;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
 
 // Validate environment variables
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error('❌ Missing Supabase credentials. Check .env.local');
+  console.error(`SUPABASE_URL: ${SUPABASE_URL ? 'OK' : 'MISSING'}`);
+  console.error(`SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY ? 'OK' : 'MISSING'}`);
   process.exit(1);
 }
 
@@ -29,7 +36,7 @@ if (!OPENAI_API_KEY) {
 }
 
 // Initialize clients
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 interface Post {
