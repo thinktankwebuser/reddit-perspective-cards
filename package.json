@@ -1,0 +1,17 @@
+{
+  "name": "reddit-perspective-cards",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "cd apps/web && npm run dev",
+    "build": "cd apps/web && npm run build",
+    "start": "cd apps/web && npm run start"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

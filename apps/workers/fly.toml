@@ -1,0 +1,33 @@
+# Fly.io configuration for Reddit Perspective Cards Worker
+# Generated with: fly launch
+# Deploy with: fly deploy
+
+app = "reddit-perspective-worker"
+primary_region = "iad"  # Change to your preferred region
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0  # Scale to zero when idle
+  processes = ["app"]
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 1024  # Sufficient for fetcher + LLM calls; monitor and adjust
+
+# Health check configuration
+[[http_service.checks]]
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "10s"
+  method = "GET"
+  path = "/health"
