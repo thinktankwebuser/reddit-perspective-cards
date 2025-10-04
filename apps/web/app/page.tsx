@@ -15,14 +15,50 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-7xl">
-        {/* Header */}
-        <header className="mb-12">
-          <h1 className="text-4xl font-bold tracking-tight mb-2">
+        {/* Hero Section */}
+        <header className="mb-12 text-center max-w-3xl mx-auto">
+          <h1 className="text-5xl font-bold tracking-tight mb-4">
             Reddit Perspective Cards
           </h1>
-          <p className="text-lg text-muted-foreground">
-            AI-generated summaries of trending Reddit discussions
+          <p className="text-xl text-muted-foreground mb-6">
+            Reddit in 30 seconds: the gist, both sides, and the key threads.
           </p>
+
+          {/* How it Works */}
+          <div className="bg-muted/30 rounded-lg p-6 text-left space-y-3">
+            <p className="text-sm text-muted-foreground">
+              <strong className="text-foreground">How it works:</strong> We track discussions across multiple subreddits and use AI to extract:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl shrink-0">⏱</span>
+                <div>
+                  <span className="inline-block px-2 py-1 rounded bg-green-50 text-green-700 border border-green-200 text-xs font-medium mb-2">
+                    Consensus
+                  </span>
+                  <p className="text-muted-foreground">What most people agree on</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl shrink-0">⚖️</span>
+                <div>
+                  <span className="inline-block px-2 py-1 rounded bg-orange-50 text-orange-700 border border-orange-200 text-xs font-medium mb-2">
+                    Contrast
+                  </span>
+                  <p className="text-muted-foreground">Key disagreements & debates</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl shrink-0">📈</span>
+                <div>
+                  <span className="inline-block px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 text-xs font-medium mb-2">
+                    Timeline
+                  </span>
+                  <p className="text-muted-foreground">How the story evolved</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </header>
 
         {/* Topics Grid */}

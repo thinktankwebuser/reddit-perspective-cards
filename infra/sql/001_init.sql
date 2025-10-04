@@ -55,18 +55,46 @@ CREATE INDEX idx_topics_slug ON topics(slug);
 -- Sample seed data
 INSERT INTO topics (slug, title, description, subreddit_allowlist, keywords) VALUES
   (
-    'ai-safety',
-    'AI Safety & Alignment',
-    'Discussions on AGI risks, alignment research, and AI safety developments',
-    '["artificial", "machinelearning", "ControlProblem", "singularity"]'::jsonb,
-    '["alignment", "safety", "AGI", "existential", "superintelligence", "RLHF"]'::jsonb
+    'tech-news',
+    'Tech Industry News',
+    'Latest tech announcements, product launches, and industry trends',
+    '["technology", "gadgets"]'::jsonb,
+    '["Apple", "Google", "Microsoft", "startup", "AI", "product launch", "tech industry"]'::jsonb
   ),
   (
-    'climate-tech',
-    'Climate Tech Innovations',
-    'Climate solutions, renewable energy, and environmental technology',
-    '["ClimateActionPlan", "climatechange", "environment", "renewableenergy"]'::jsonb,
-    '["carbon", "renewable", "solar", "wind", "geoengineering", "emissions"]'::jsonb
+    'programming',
+    'Programming & Development',
+    'Code discussions, best practices, language debates, and programming challenges',
+    '["programming", "coding", "dailyprogrammer"]'::jsonb,
+    '["Python", "JavaScript", "Java", "code", "algorithm", "debugging", "best practices"]'::jsonb
+  ),
+  (
+    'learn-programming',
+    'Learning to Code',
+    'Beginner tutorials, career switching advice, bootcamps, and learning resources',
+    '["learnprogramming", "askprogramming"]'::jsonb,
+    '["tutorial", "beginner", "bootcamp", "career switch", "first job", "self-taught"]'::jsonb
+  ),
+  (
+    'it-careers',
+    'IT Careers & Jobs',
+    'Job market trends, salary discussions, interviews, and professional development',
+    '["ITCareerQuestions", "cscareerquestions", "ITdept"]'::jsonb,
+    '["salary", "interview", "resume", "remote work", "job market", "layoffs", "promotion"]'::jsonb
+  ),
+  (
+    'cybersecurity',
+    'Cybersecurity & Privacy',
+    'Security threats, breaches, ethical hacking, compliance, and data protection',
+    '["cybersecurity", "netsec", "AskNetsec"]'::jsonb,
+    '["breach", "ransomware", "encryption", "zero-day", "firewall", "phishing", "compliance"]'::jsonb
+  ),
+  (
+    'ai-ml',
+    'AI & Machine Learning',
+    'Artificial intelligence developments, LLMs, tools, ethics, and research',
+    '["artificial", "MachineLearning", "ArtificialIntelligence", "LocalLLaMA"]'::jsonb,
+    '["ChatGPT", "LLM", "neural network", "GPT", "model training", "AI ethics", "AGI"]'::jsonb
   );
 
 -- Row Level Security (RLS) - Optional for production

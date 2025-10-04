@@ -4,7 +4,7 @@
  */
 
 import Link from 'next/link';
-import { ArrowUpIcon, ExternalLinkIcon } from 'lucide-react';
+import { ArrowUpIcon, ExternalLinkIcon, ArrowRightIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { TopicCardData } from '@/lib/types';
@@ -16,17 +16,63 @@ export default function TopicCard({
   title,
   notes,
   links,
+  last_updated,
 }: TopicCardProps) {
   const hasNotes = notes.consensus || notes.contrast || notes.timeline;
+
+  // Parse timeline arrows into visual steps
+  const formatTimeline = (timeline: string) => {
+    const steps = timeline.split('→').map(s => s.trim());
+    return steps;
+  };
+
+  // Format time ago
+  const formatTimeAgo = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffHours < 1) return 'Updated just now';
+    if (diffHours < 24) return `Updated ${diffHours}h ago`;
+    if (diffDays === 1) return 'Updated yesterday';
+    return `Updated ${diffDays}d ago`;
+  };
+
+  // Extract unique subreddits from links
+  const getSubreddits = () => {
+    if (!links || links.length === 0) return [];
+    const subreddits = links
+      .map(link => {
+        const match = link.url.match(/reddit\.com\/r\/([^\/]+)/);
+        return match ? match[1] : null;
+      })
+      .filter(Boolean);
+    return [...new Set(subreddits)].slice(0, 3); // Max 3 unique
+  };
+
+  const subreddits = getSubreddits();
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
         <Link href={`/topic/${slug}`}>
-          <CardTitle className="hover:text-primary transition-colors cursor-pointer">
+          <CardTitle className="hover:text-primary transition-colors cursor-pointer mb-2">
             {title}
           </CardTitle>
         </Link>
+        {/* Context Line */}
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          {last_updated && <span>{formatTimeAgo(last_updated)}</span>}
+          {subreddits.length > 0 && (
+            <>
+              <span>·</span>
+              <span>Sources: {subreddits.map(s => `r/${s}`).join(', ')}</span>
+            </>
+          )}
+        </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -52,25 +98,35 @@ export default function TopicCard({
             )}
 
             {notes.timeline && (
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                   Timeline
                 </Badge>
-                <p className="text-sm text-muted-foreground italic">{notes.timeline}</p>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  {formatTimeline(notes.timeline).map((step, idx, arr) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <span className="bg-muted/50 px-2 py-1 rounded">{step}</span>
+                      {idx < arr.length - 1 && <ArrowRightIcon className="w-3 h-3 shrink-0" />}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground italic">
-            No perspective notes available yet.
-          </p>
+          <div className="bg-muted/30 rounded-lg p-4">
+            <p className="text-sm text-muted-foreground">
+              No summary right now — check the top threads directly below.
+            </p>
+          </div>
         )}
 
         {/* Links Section */}
         {links && links.length > 0 ? (
           <div className="border-t pt-4 space-y-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Top Posts
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+              <span>🧵</span>
+              <span>Dive into the top threads</span>
             </p>
             <div className="space-y-2">
               {links.map((link) => (
@@ -93,7 +149,7 @@ export default function TopicCard({
           </div>
         ) : (
           <div className="border-t pt-4">
-            <p className="text-xs text-muted-foreground italic">No posts available.</p>
+            <p className="text-xs text-muted-foreground italic">No threads available yet.</p>
           </div>
         )}
       </CardContent>
