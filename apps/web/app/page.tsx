@@ -4,6 +4,7 @@
  */
 
 import TopicCard from '@/components/TopicCard';
+import AnalyticsPageView from '@/components/AnalyticsPageView';
 import { getTopicsData } from '@/lib/data';
 import type { TopicCardData } from '@/lib/types';
 
@@ -14,6 +15,7 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-background">
+      <AnalyticsPageView topicCount={topics.length} />
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         {/* Hero Section */}
         <header className="mb-12 text-center max-w-3xl mx-auto">

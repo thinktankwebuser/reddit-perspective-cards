@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { initSentry } from '@/lib/sentry';
+import { Analytics } from '@vercel/analytics/react';
 
 // Initialize Sentry for error monitoring
 if (typeof window !== 'undefined') {
@@ -19,7 +20,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

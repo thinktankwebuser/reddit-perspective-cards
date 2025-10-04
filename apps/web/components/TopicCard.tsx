@@ -3,11 +3,15 @@
  * Displays a topic with perspective notes and post links
  */
 
+'use client';
+
 import Link from 'next/link';
 import { ArrowUpIcon, ExternalLinkIcon, ArrowRightIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { TopicCardData } from '@/lib/types';
+import { trackTopicCardClick, trackRedditLinkClick, trackPerspectiveNotesView, trackEmptyNotesView } from '@/lib/analytics';
+import { useEffect, useRef } from 'react';
 
 export interface TopicCardProps extends TopicCardData {}
 
@@ -19,6 +23,46 @@ export default function TopicCard({
   last_updated,
 }: TopicCardProps) {
   const hasNotes = notes.consensus || notes.contrast || notes.timeline;
+  const cardRef = useRef<HTMLDivElement>(null);
+  const hasTrackedView = useRef(false);
+
+  // Track perspective notes visibility using Intersection Observer
+  useEffect(() => {
+    if (!cardRef.current || hasTrackedView.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasTrackedView.current) {
+            hasTrackedView.current = true;
+            if (hasNotes) {
+              trackPerspectiveNotesView(slug, true);
+            } else {
+              trackEmptyNotesView(slug);
+            }
+          }
+        });
+      },
+      { threshold: 0.5 } // Trigger when 50% visible
+    );
+
+    observer.observe(cardRef.current);
+
+    return () => observer.disconnect();
+  }, [slug, hasNotes]);
+
+  // Handle topic card click
+  const handleCardClick = () => {
+    trackTopicCardClick(slug, title);
+  };
+
+  // Handle Reddit link click
+  const handleLinkClick = (link: { title: string; score: number; url: string }) => {
+    // Extract subreddit from URL
+    const match = link.url.match(/reddit\.com\/r\/([^\/]+)/);
+    const subreddit = match ? match[1] : 'unknown';
+    trackRedditLinkClick(slug, link.title, link.score, subreddit);
+  };
 
   // Parse timeline arrows into visual steps
   const formatTimeline = (timeline: string) => {
@@ -56,9 +100,9 @@ export default function TopicCard({
   const subreddits = getSubreddits();
 
   return (
-    <Card className="hover:shadow-lg transition-shadow">
+    <Card ref={cardRef} className="hover:shadow-lg transition-shadow">
       <CardHeader>
-        <Link href={`/topic/${slug}`}>
+        <Link href={`/topic/${slug}`} onClick={handleCardClick}>
           <CardTitle className="hover:text-primary transition-colors cursor-pointer mb-2">
             {title}
           </CardTitle>
@@ -135,6 +179,7 @@ export default function TopicCard({
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => handleLinkClick(link)}
                   className="flex items-start gap-2 text-sm text-primary hover:underline group"
                 >
                   <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0 mt-0.5">
