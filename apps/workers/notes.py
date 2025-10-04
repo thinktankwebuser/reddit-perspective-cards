@@ -9,8 +9,18 @@ from datetime import datetime, timezone
 from openai import OpenAI
 from supabase import create_client
 from dotenv import load_dotenv
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+import sentry_sdk
 
 load_dotenv()
+
+# Initialize Sentry for error monitoring
+if os.getenv("SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        environment=os.getenv("FLY_REGION", "development"),
+        traces_sample_rate=0.1,
+    )
 
 # Initialize OpenAI client
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -37,6 +47,47 @@ Rules:
 - Do not editorialize or add opinions
 - Strictly enforce character/word limits
 - Focus on the discussion themes, not just post titles"""
+
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=2, max=10),
+    retry=retry_if_exception_type((Exception,)),
+    reraise=True
+)
+def call_openai_with_retry(user_prompt: str):
+    """
+    Call OpenAI API with exponential backoff retry logic
+
+    Retries up to 3 times with exponential backoff (2s, 4s, 8s)
+    """
+    response = openai_client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt}
+        ],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "topic_perspective_notes",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "consensus": {"type": "string"},
+                        "contrast": {"type": "string"},
+                        "timeline": {"type": "string"}
+                    },
+                    "required": ["consensus", "contrast", "timeline"],
+                    "additionalProperties": False
+                }
+            }
+        },
+        temperature=0.3,
+        timeout=30.0,  # 30 second timeout
+    )
+    return response
 
 
 def format_posts_for_prompt(posts: list) -> tuple[str, list]:
@@ -111,33 +162,16 @@ def generate_notes_for_topic(topic: dict) -> bool:
     posts_formatted, source_ids = format_posts_for_prompt(posts)
     user_prompt = f"Topic: {topic['title']}\n\nPosts:\n\n{posts_formatted}\nGenerate perspective notes following the schema."
 
-    # Call LLM with structured output
+    # Call LLM with structured output (with retry logic)
     try:
-        response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt}
-            ],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "topic_perspective_notes",
-                    "strict": True,
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "consensus": {"type": "string"},
-                            "contrast": {"type": "string"},
-                            "timeline": {"type": "string"}
-                        },
-                        "required": ["consensus", "contrast", "timeline"],
-                        "additionalProperties": False
-                    }
-                }
-            },
-            temperature=0.3,  # Lower temperature for consistency
-        )
+        response = call_openai_with_retry(user_prompt)
+    except Exception as e:
+        print(f"  ✗ Failed after retries: {e}")
+        sentry_sdk.capture_exception(e)
+        return False
+
+    # Parse response
+    try:
 
         # Parse response
         raw_response = response.choices[0].message.content
@@ -164,9 +198,11 @@ def generate_notes_for_topic(topic: dict) -> bool:
 
     except json.JSONDecodeError as e:
         print(f"  ✗ Failed to parse LLM response: {e}")
+        sentry_sdk.capture_exception(e)
         return False
     except Exception as e:
-        print(f"  ✗ LLM error: {e}")
+        print(f"  ✗ Database error: {e}")
+        sentry_sdk.capture_exception(e)
         return False
 
 

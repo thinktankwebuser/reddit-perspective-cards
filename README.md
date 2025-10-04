@@ -152,11 +152,63 @@ See design doc for detailed phase breakdown with test checkpoints:
 - **Phase 6**: Cron integration (1h)
 - **Phase 7**: Hardening (2-3h)
 
-## Monitoring
+## Monitoring & Hardening
 
-- **Vercel logs**: `vercel logs --follow`
-- **Fly.io logs**: `fly logs`
-- **Supabase**: Dashboard → Logs
+### Phase 7: Production Hardening ✅
+
+The MVP now includes enterprise-grade error monitoring and reliability features:
+
+**Error Monitoring (Sentry):**
+- Frontend error tracking with Next.js integration
+- Backend error tracking with FastAPI integration
+- Performance monitoring (10% sample rate)
+- Release tracking via Git commit SHA
+
+**Retry Logic:**
+- OpenAI API calls retry automatically (3 attempts with exponential backoff)
+- 30-second timeout per request
+- Automatic Sentry capture on final failure
+
+**Structured Logging:**
+- JSON-formatted logs for easy parsing
+- Consistent log levels (INFO, WARNING, ERROR)
+- Exception traces included
+
+**Data Retention:**
+- Posts older than 30 days auto-deleted weekly
+- Cleanup cron runs Sundays at 3 AM UTC
+- Metrics tracked (deleted count, cutoff date)
+
+### Setup Instructions
+
+1. **Configure Sentry** (see `docs/ALERTING.md`):
+   ```bash
+   # Vercel
+   vercel env add NEXT_PUBLIC_SENTRY_DSN
+
+   # Fly.io
+   fly secrets set SENTRY_DSN=<your-dsn>
+   ```
+
+2. **View Logs**:
+   ```bash
+   # Vercel (structured logs)
+   vercel logs --follow
+
+   # Fly.io (JSON format)
+   fly logs
+   fly logs | grep '"level":"ERROR"'
+   ```
+
+3. **Test Cleanup**:
+   ```bash
+   curl -X POST https://your-worker.fly.dev/run/cleanup \
+     -H "X-Worker-Token: $WORKER_AUTH_TOKEN"
+   ```
+
+See full documentation:
+- `docs/ALERTING.md` - Complete alerting setup guide
+- `docs/PHASE7_SUMMARY.md` - Implementation details
 
 ## License
 

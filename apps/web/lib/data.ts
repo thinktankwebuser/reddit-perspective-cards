@@ -5,6 +5,7 @@
 
 import { supabase } from './supabase';
 import type { TopicCardData } from '@/lib/types';
+import { Sentry } from './sentry';
 
 /**
  * Fetch all topics with notes and links
@@ -31,6 +32,7 @@ export async function getTopicsData(): Promise<TopicCardData[]> {
 
   if (topicsError || !topics) {
     console.error('Error fetching topics:', topicsError);
+    Sentry.captureException(topicsError || new Error('Failed to fetch topics'));
     return [];
   }
 
@@ -112,6 +114,7 @@ export async function getTopicData(slug: string): Promise<TopicCardData | null> 
 
   if (topicError || !topics || topics.length === 0) {
     console.error('Error fetching topic:', topicError);
+    Sentry.captureException(topicError || new Error(`Topic not found: ${slug}`));
     return null;
   }
 

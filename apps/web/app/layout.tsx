@@ -1,5 +1,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { initSentry } from '@/lib/sentry';
+
+// Initialize Sentry for error monitoring
+if (typeof window !== 'undefined') {
+  initSentry();
+}
 
 export const metadata: Metadata = {
   title: 'Reddit Perspective Cards',
