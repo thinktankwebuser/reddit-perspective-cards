@@ -1,0 +1,45 @@
+name: Auto-Embed Posts
+
+# Automatically generates embeddings for posts without them
+# Runs every 10 minutes (free alternative to Supabase pg_cron)
+
+on:
+  schedule:
+    # Every 10 minutes
+    - cron: '*/10 * * * *'
+
+  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
+
+jobs:
+  embed-posts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call Supabase Edge Function
+        run: |
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            ${{ secrets.SUPABASE_URL }}/functions/v1/embed-posts \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n-1)
+
+          echo "Response: $body"
+
+          if [ "$http_code" -ne 200 ]; then
+            echo "Error: HTTP $http_code"
+            exit 1
+          fi
+
+          # Check if any posts were processed
+          processed=$(echo "$body" | jq -r '.processed // 0')
+          failed=$(echo "$body" | jq -r '.failed // 0')
+
+          echo "Processed: $processed posts"
+          echo "Failed: $failed posts"
+
+          if [ "$failed" -gt 0 ]; then
+            echo "Warning: Some posts failed to embed"
+          fi
