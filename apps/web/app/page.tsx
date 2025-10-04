@@ -3,6 +3,8 @@
  * Displays grid of topic cards
  */
 
+import Link from 'next/link';
+import { Search } from 'lucide-react';
 import TopicCard from '@/components/TopicCard';
 import AnalyticsPageView from '@/components/AnalyticsPageView';
 import { getTopicsData } from '@/lib/data';
@@ -19,12 +21,23 @@ export default async function HomePage() {
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         {/* Hero Section */}
         <header className="mb-12 text-center max-w-3xl mx-auto">
-          <h1 className="text-5xl font-bold tracking-tight mb-4">
-            Reddit Perspective Cards
-          </h1>
-          <p className="text-xl text-muted-foreground mb-6">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h1 className="text-5xl font-bold tracking-tight">
+              Reddit Perspective Cards
+            </h1>
+          </div>
+          <p className="text-xl text-muted-foreground mb-4">
             Reddit in 30 seconds: the gist, both sides, and the key threads.
           </p>
+
+          {/* Search Link */}
+          <Link
+            href="/search"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors mb-6"
+          >
+            <Search className="w-5 h-5" />
+            Search Reddit Posts
+          </Link>
 
           {/* How it Works */}
           <div className="bg-muted/30 rounded-lg p-6 text-left space-y-3">
