@@ -37,13 +37,16 @@ export default function SearchPage() {
 
   const handleSearch = async () => {
     const trimmedQuery = query.trim();
+
+    // Clear previous error first
+    setError(null);
+
     if (!trimmedQuery || trimmedQuery.length < 2) {
       setError('Please enter at least 2 characters');
       return;
     }
 
     setLoading(true);
-    setError(null);
     setHasSearched(true);
 
     try {
@@ -138,11 +141,11 @@ export default function SearchPage() {
               <p className="font-medium mb-2">Try searching for:</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  'negotiate salary',
-                  'learn programming',
-                  'cybersecurity career',
-                  'machine learning projects',
-                  'remote work advice',
+                  'programming',
+                  'career',
+                  'cybersecurity',
+                  'salary',
+                  'machine learning',
                 ].map((suggestion) => (
                   <button
                     key={suggestion}
