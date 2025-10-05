@@ -65,7 +65,7 @@ export default function SearchInput({
       </div>
 
       {/* Search Tips */}
-      {!hasSearched && suggestions.length > 0 && (
+      {suggestions.length > 0 && (
         <div className="mt-4 text-sm text-muted-foreground">
           <p className="font-medium mb-2">Try searching for:</p>
           <div className="flex flex-wrap gap-2">
