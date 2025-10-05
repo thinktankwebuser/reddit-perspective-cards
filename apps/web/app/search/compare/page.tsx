@@ -44,7 +44,7 @@ export default function SearchComparePage() {
 
   // Auto-demo on first load
   useEffect(() => {
-    const demoQuery = 'How to get started with Python?';
+    const demoQuery = 'machine learning career';
     setQuery(demoQuery);
     handleSearch(demoQuery);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -173,10 +173,10 @@ export default function SearchComparePage() {
           loading={loading}
           hasSearched={hasSearched}
           suggestions={[
-            'How to get started with Python?',
-            'What is machine learning?',
-            'Career advice for developers',
-            'Learning resources for beginners',
+            'machine learning career',
+            'Python programming tips',
+            'cybersecurity best practices',
+            'JavaScript frameworks comparison',
           ]}
           placeholder="e.g., How to learn Python?"
           buttonText="Compare"

@@ -75,8 +75,39 @@ export default async function HomePage() {
               <Search className="w-6 h-6" />
               Advanced Reddit Search
             </h2>
-            <p className="text-sm text-muted-foreground mb-6">
-              <strong className="text-foreground">Better than Reddit's default search.</strong> We use 3 algorithms to find what you're actually looking for:
+
+            {/* Why Better than Reddit */}
+            <div className="bg-white rounded-lg p-4 mb-6 border-2 border-orange-200">
+              <p className="text-sm font-semibold text-orange-900 mb-2">🚀 Why Better Than Reddit's Search?</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <p className="font-medium text-red-700 mb-1">❌ Reddit's Limitations:</p>
+                  <ul className="text-gray-600 space-y-1 ml-4">
+                    <li>• Basic keyword matching only</li>
+                    <li>• Can't understand synonyms or intent</li>
+                    <li>• Optimized for engagement, not search</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-medium text-green-700 mb-1">✅ Our Advantages:</p>
+                  <ul className="text-gray-600 space-y-1 ml-4">
+                    <li>• AI understands what you mean</li>
+                    <li>• Finds relevant posts Reddit misses</li>
+                    <li>• 3 algorithms working together</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
+                <p className="text-xs text-blue-900">
+                  <strong>Example:</strong> Search "getting started programming" → Reddit only finds exact matches.
+                  We find "beginner coding", "learn to program", "first steps development" too.
+                </p>
+              </div>
+            </div>
+
+            {/* Three Algorithms */}
+            <p className="text-sm text-muted-foreground mb-4 text-center font-medium">
+              How We Do It: 3 Search Algorithms
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-xs">
               <div className="bg-white rounded-lg p-4 border border-blue-200">
