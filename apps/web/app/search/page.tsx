@@ -7,7 +7,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Search, Loader2, ExternalLink, ArrowUp, Home } from 'lucide-react';
+import { Home, Loader2, Search } from 'lucide-react';
+import SearchInput from '@/components/SearchInput';
+import SearchResultCard from '@/components/SearchResultCard';
 
 interface SearchResult {
   id: string;
@@ -35,8 +37,8 @@ export default function SearchPage() {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearch = async () => {
-    const trimmedQuery = query.trim();
+  const handleSearch = async (searchQuery?: string) => {
+    const trimmedQuery = (searchQuery ?? query).trim();
 
     // Clear previous error first
     setError(null);
@@ -69,17 +71,6 @@ export default function SearchPage() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
-  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -102,74 +93,15 @@ export default function SearchPage() {
         </div>
 
         {/* Search Input */}
-        <div className="mb-8">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSearch();
-              }}
-              placeholder="e.g., How to negotiate salary?"
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              disabled={loading}
-              autoFocus
-            />
-            <button
-              onClick={handleSearch}
-              disabled={loading || !query.trim()}
-              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Searching...
-                </>
-              ) : (
-                <>
-                  <Search className="w-5 h-5" />
-                  Search
-                </>
-              )}
-            </button>
-          </div>
-
-          {/* Search Tips */}
-          {!hasSearched && (
-            <div className="mt-4 text-sm text-muted-foreground">
-              <p className="font-medium mb-2">Try searching for:</p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  'programming',
-                  'career',
-                  'cybersecurity',
-                  'salary',
-                  'machine learning',
-                ].map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    onClick={() => {
-                      setQuery(suggestion);
-                      setError(null);
-                      setHasSearched(false);
-                      // Trigger search after query state updates
-                      setTimeout(() => {
-                        const trimmedQuery = suggestion.trim();
-                        if (trimmedQuery.length >= 2) {
-                          handleSearch();
-                        }
-                      }, 50);
-                    }}
-                    className="px-3 py-1 bg-muted hover:bg-muted/80 rounded-full text-xs"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        <SearchInput
+          query={query}
+          setQuery={setQuery}
+          onSearch={handleSearch}
+          loading={loading}
+          hasSearched={hasSearched}
+          suggestions={['programming', 'career', 'cybersecurity', 'salary', 'machine learning']}
+          placeholder="e.g., How to negotiate salary?"
+        />
 
         {/* Error State */}
         {error && (
@@ -215,50 +147,12 @@ export default function SearchPage() {
         {/* Results List */}
         <div className="space-y-4">
           {results.map((post) => (
-            <div
+            <SearchResultCard
               key={post.id}
-              className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow bg-white"
-            >
-              {/* Title */}
-              <h3 className="font-semibold text-lg mb-2 text-gray-900">
-                {post.title}
-              </h3>
-
-              {/* Excerpt */}
-              {post.preview_excerpt && (
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                  {post.preview_excerpt}
-                </p>
-              )}
-
-              {/* Metadata */}
-              <div className="flex items-center gap-4 text-xs text-gray-500 mb-2">
-                <span className="flex items-center gap-1 font-medium">
-                  <ArrowUp className="w-3 h-3" />
-                  {post.score.toLocaleString()}
-                </span>
-                <span className="font-medium">r/{post.subreddit}</span>
-                <span>{formatDate(post.created_utc)}</span>
-              </div>
-
-              {/* Link */}
-              <a
-                href={post.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-              >
-                View on Reddit
-                <ExternalLink className="w-3 h-3" />
-              </a>
-
-              {/* Debug: Relevance Score (remove in production) */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="mt-2 text-xs text-gray-400">
-                  Relevance: {post.rank.toFixed(4)}
-                </div>
-              )}
-            </div>
+              post={post}
+              showExcerpt={true}
+              showDevScore={true}
+            />
           ))}
         </div>
 
