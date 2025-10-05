@@ -92,8 +92,8 @@ export default function SearchComparePage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Search Comparison</h1>
-              <p className="text-muted-foreground">Compare BM25 (keyword) vs Semantic (vector) search results</p>
+              <h1 className="text-4xl font-bold mb-2">Search Reddit Posts</h1>
+              <p className="text-muted-foreground">Compare BM25 (keyword) vs Semantic (vector) vs Hybrid (RRF) search results side-by-side</p>
             </div>
             <Link
               href="/"

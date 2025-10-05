@@ -30,21 +30,14 @@ export default async function HomePage() {
             Reddit in 30 seconds: the gist, both sides, and the key threads.
           </p>
 
-          {/* Search Links */}
-          <div className="flex gap-3 mb-6">
-            <Link
-              href="/search"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              <Search className="w-5 h-5" />
-              Search Posts
-            </Link>
+          {/* Search Link */}
+          <div className="flex justify-center mb-6">
             <Link
               href="/search/compare"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-lg font-semibold"
             >
               <Search className="w-5 h-5" />
-              Compare Search (BM25 vs Semantic)
+              Search & Compare (BM25 vs Semantic vs Hybrid)
             </Link>
           </div>
 
