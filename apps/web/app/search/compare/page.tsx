@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Home, Sparkles, Hash, Loader2, Search } from 'lucide-react';
 import SearchInput from '@/components/SearchInput';
@@ -40,7 +40,15 @@ export default function SearchComparePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [showHybrid, setShowHybrid] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
+
+  // Auto-demo on first load
+  useEffect(() => {
+    const demoQuery = 'How to get started with Python?';
+    setQuery(demoQuery);
+    handleSearch(demoQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   const handleSearch = async (searchQuery?: string) => {
     const trimmedQuery = (searchQuery ?? query).trim();
@@ -191,83 +199,115 @@ export default function SearchComparePage() {
           </div>
         )}
 
-        {/* Toggle for 2-column vs 3-column view */}
+        {/* Toggle for comparison view */}
         {hasSearched && !loading && (bm25Results.length > 0 || semanticResults.length > 0 || hybridResults.length > 0) && (
-          <div className="mb-6 flex justify-center">
-            <button
-              onClick={() => setShowHybrid(!showHybrid)}
-              className="px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg text-sm font-medium transition-colors"
-            >
-              {showHybrid ? 'Hide Hybrid Results' : 'Show Hybrid Results'}
-            </button>
+          <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-900 mb-1">
+                  {showComparison ? '📊 Comparison Mode Active' : '🎯 Showing Best Results (Hybrid)'}
+                </p>
+                <p className="text-xs text-gray-600">
+                  {showComparison
+                    ? 'See how BM25 (keyword), Semantic (AI), and Hybrid (combined) differ'
+                    : 'Hybrid combines keyword + AI search for optimal results'}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowComparison(!showComparison)}
+                className="ml-4 px-4 py-2 bg-primary text-white hover:bg-primary/90 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+              >
+                {showComparison ? 'Show Hybrid Only' : 'Compare All 3 →'}
+              </button>
+            </div>
           </div>
         )}
 
-        {/* Side-by-Side Results */}
+        {/* Results Display */}
         {hasSearched && !loading && (bm25Results.length > 0 || semanticResults.length > 0 || hybridResults.length > 0) && (
-          <div className={`grid grid-cols-1 ${showHybrid ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-6`}>
-            {/* BM25 Results */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Hash className="w-5 h-5 text-blue-600" />
-                <h2 className="text-xl font-bold">BM25 (Keyword Search)</h2>
-                <span className="text-sm text-gray-500">({bm25Results.length} results)</span>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">
-                Matches exact keywords and phrases in post titles and excerpts
-              </p>
-              <div className="space-y-3">
-                {bm25Results.map((post, idx) => (
-                  <SearchResultCard key={post.id} post={post} mode="bm25" rank={idx} showExcerpt={false} />
-                ))}
-              </div>
-              {bm25Results.length === 0 && (
-                <p className="text-sm text-gray-500 italic">No keyword matches found</p>
-              )}
-            </div>
-
-            {/* Semantic Results */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-                <h2 className="text-xl font-bold">Semantic (Vector Search)</h2>
-                <span className="text-sm text-gray-500">({semanticResults.length} results)</span>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">
-                Understands meaning and finds conceptually similar posts
-              </p>
-              <div className="space-y-3">
-                {semanticResults.map((post, idx) => (
-                  <SearchResultCard key={post.id} post={post} mode="semantic" rank={idx} showExcerpt={false} />
-                ))}
-              </div>
-              {semanticResults.length === 0 && (
-                <p className="text-sm text-gray-500 italic">No semantic matches found</p>
-              )}
-            </div>
-
-            {/* Hybrid Results (conditionally shown) */}
-            {showHybrid && (
-              <div>
+          <>
+            {!showComparison ? (
+              /* Hybrid Only View (Default) */
+              <div className="max-w-2xl mx-auto">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles className="w-5 h-5 text-green-600" />
-                  <h2 className="text-xl font-bold">Hybrid (RRF Fusion)</h2>
+                  <h2 className="text-xl font-bold">Best Results</h2>
                   <span className="text-sm text-gray-500">({hybridResults.length} results)</span>
                 </div>
-                <p className="text-sm text-gray-600 mb-4">
-                  Combines keyword and semantic search using Reciprocal Rank Fusion
-                </p>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {hybridResults.map((post, idx) => (
-                    <SearchResultCard key={post.id} post={post} mode="hybrid" rank={idx} showExcerpt={false} />
+                    <SearchResultCard key={post.id} post={post} mode="hybrid" rank={idx} showExcerpt={true} />
                   ))}
                 </div>
                 {hybridResults.length === 0 && (
-                  <p className="text-sm text-gray-500 italic">No hybrid matches found</p>
+                  <p className="text-sm text-gray-500 italic">No results found</p>
                 )}
               </div>
+            ) : (
+              /* Comparison View (All 3 Algorithms) */
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* BM25 Results */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Hash className="w-5 h-5 text-blue-600" />
+                    <h2 className="text-xl font-bold">BM25</h2>
+                    <span className="text-sm text-gray-500">({bm25Results.length})</span>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-4">
+                    Keyword matching
+                  </p>
+                  <div className="space-y-3">
+                    {bm25Results.map((post, idx) => (
+                      <SearchResultCard key={post.id} post={post} mode="bm25" rank={idx} showExcerpt={false} />
+                    ))}
+                  </div>
+                  {bm25Results.length === 0 && (
+                    <p className="text-sm text-gray-500 italic">No matches</p>
+                  )}
+                </div>
+
+                {/* Semantic Results */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    <h2 className="text-xl font-bold">Semantic</h2>
+                    <span className="text-sm text-gray-500">({semanticResults.length})</span>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-4">
+                    AI-powered meaning
+                  </p>
+                  <div className="space-y-3">
+                    {semanticResults.map((post, idx) => (
+                      <SearchResultCard key={post.id} post={post} mode="semantic" rank={idx} showExcerpt={false} />
+                    ))}
+                  </div>
+                  {semanticResults.length === 0 && (
+                    <p className="text-sm text-gray-500 italic">No matches</p>
+                  )}
+                </div>
+
+                {/* Hybrid Results */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="w-5 h-5 text-green-600" />
+                    <h2 className="text-xl font-bold">Hybrid</h2>
+                    <span className="text-sm text-gray-500">({hybridResults.length})</span>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-4">
+                    Combined (RRF)
+                  </p>
+                  <div className="space-y-3">
+                    {hybridResults.map((post, idx) => (
+                      <SearchResultCard key={post.id} post={post} mode="hybrid" rank={idx} showExcerpt={false} />
+                    ))}
+                  </div>
+                  {hybridResults.length === 0 && (
+                    <p className="text-sm text-gray-500 italic">No matches</p>
+                  )}
+                </div>
+              </div>
             )}
-          </div>
+          </>
         )}
 
         {/* Empty State */}
