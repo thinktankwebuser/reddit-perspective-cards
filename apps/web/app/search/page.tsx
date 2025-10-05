@@ -92,6 +92,28 @@ export default function SearchPage() {
           </p>
         </div>
 
+        {/* Educational Banner */}
+        <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🔍</div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900 mb-1">
+                Want to see how different search algorithms work?
+              </p>
+              <p className="text-xs text-gray-600 mb-3">
+                Compare BM25 (keyword matching) vs Semantic (AI-powered meaning) vs Hybrid (best of both) search side-by-side
+              </p>
+              <Link
+                href="/search/compare"
+                className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+              >
+                Try Search Comparison
+                <Search className="w-3 h-3" />
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Search Input */}
         <SearchInput
           query={query}
@@ -99,7 +121,12 @@ export default function SearchPage() {
           onSearch={handleSearch}
           loading={loading}
           hasSearched={hasSearched}
-          suggestions={['programming', 'career', 'cybersecurity', 'salary', 'machine learning']}
+          suggestions={[
+            'How to get started with Python?',
+            'What is machine learning?',
+            'Career advice for developers',
+            'How to negotiate salary?',
+          ]}
           placeholder="e.g., How to negotiate salary?"
         />
 

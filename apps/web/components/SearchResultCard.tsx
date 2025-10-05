@@ -57,19 +57,29 @@ export default function SearchResultCard({
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xs font-bold text-gray-500">#{rank + 1}</span>
           {mode === 'bm25' && post.rank && (
-            <span className="text-xs text-blue-600">BM25: {post.rank.toFixed(3)}</span>
+            <span className="text-xs text-blue-600" title="BM25 ranking score based on keyword frequency and position">
+              BM25: {post.rank.toFixed(3)}
+            </span>
           )}
           {mode === 'semantic' && post.similarity && (
-            <span className="text-xs text-purple-600">Similarity: {post.similarity.toFixed(3)}</span>
+            <span className="text-xs text-purple-600" title="Cosine similarity score (0-1) measuring meaning similarity">
+              Similarity: {post.similarity.toFixed(3)}
+            </span>
           )}
           {mode === 'hybrid' && (
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-green-600">RRF: {post.rrf_score?.toFixed(4)}</span>
+              <span className="text-xs text-green-600" title="Reciprocal Rank Fusion score combining BM25 and semantic rankings">
+                RRF: {post.rrf_score?.toFixed(4)}
+              </span>
               {post.bm25_rank !== undefined && post.bm25_rank > 0 && (
-                <span className="text-xs text-blue-500">BM25: {post.bm25_rank.toFixed(3)}</span>
+                <span className="text-xs text-blue-500" title="BM25 keyword matching score">
+                  BM25: {post.bm25_rank.toFixed(3)}
+                </span>
               )}
               {post.semantic_similarity !== undefined && post.semantic_similarity > 0 && (
-                <span className="text-xs text-purple-500">Sim: {post.semantic_similarity.toFixed(3)}</span>
+                <span className="text-xs text-purple-500" title="Semantic similarity score from vector embeddings">
+                  Sim: {post.semantic_similarity.toFixed(3)}
+                </span>
               )}
             </div>
           )}

@@ -105,6 +105,58 @@ export default function SearchComparePage() {
           </div>
         </div>
 
+        {/* How it Works Section */}
+        <div className="mb-8 bg-muted/30 rounded-lg p-6">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <span className="text-2xl">💡</span>
+            How Search Algorithms Work
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div className="bg-white rounded-lg p-4 border border-blue-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Hash className="w-4 h-4 text-blue-600" />
+                <h3 className="font-bold text-blue-900">BM25 (Keyword)</h3>
+              </div>
+              <p className="text-gray-600 text-xs mb-2">
+                Traditional search that matches exact keywords and phrases
+              </p>
+              <ul className="text-xs text-gray-500 space-y-1">
+                <li>✓ Fast and precise</li>
+                <li>✓ Best for specific terms</li>
+                <li>✗ Misses synonyms</li>
+              </ul>
+            </div>
+            <div className="bg-white rounded-lg p-4 border border-purple-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-4 h-4 text-purple-600" />
+                <h3 className="font-bold text-purple-900">Semantic (Vector)</h3>
+              </div>
+              <p className="text-gray-600 text-xs mb-2">
+                AI-powered search that understands meaning and context
+              </p>
+              <ul className="text-xs text-gray-500 space-y-1">
+                <li>✓ Understands intent</li>
+                <li>✓ Finds similar concepts</li>
+                <li>✗ Can be less precise</li>
+              </ul>
+            </div>
+            <div className="bg-white rounded-lg p-4 border border-green-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-4 h-4 text-green-600" />
+                <h3 className="font-bold text-green-900">Hybrid (RRF)</h3>
+              </div>
+              <p className="text-gray-600 text-xs mb-2">
+                Combines both approaches using Reciprocal Rank Fusion
+              </p>
+              <ul className="text-xs text-gray-500 space-y-1">
+                <li>✓ Best of both worlds</li>
+                <li>✓ Balanced results</li>
+                <li>✓ Production-ready</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         {/* Search Input */}
         <SearchInput
           query={query}
